@@ -1,14 +1,28 @@
 const graphql = require('graphql');
 const_ = require('lodash');
 
-const {GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLInt} = graphql;
+const {GraphQLObjectType,
+  GraphQLString,
+  GraphQLSchema,
+  GraphQLID,
+  GraphQLInt,
+  GraphQLList
+} = graphql;
+
 
 const BookType = new GraphQLObjectType({
   name: 'Book',
   fields: () => ({
     id: { type:GraphQLID },
     name: {type: GraphQLString},
-    genre: {type: GraphQLString}
+    genre: {type: GraphQLString},
+    author: {
+      type: AuthorType,
+      resolve(parent, args){
+        console.log(parent);
+        return _.find(authors, {id: parent_authorId})
+      }
+    }
   })
 });
 
@@ -17,7 +31,13 @@ const AuthorType = new GraphQLObjectType({
   fields: () => ({
     id: { type:GraphQLID },
     name: {type: GraphQLString},
-    age: {type: GraphQLInt}
+    age: {type: GraphQLInt},
+    books:{
+      type: new GraphQLList(BookType),
+      resolve(parent, args){
+        return _.fitler(books, { authorId: parent.id});
+      }
+    }
   })
 });
 
